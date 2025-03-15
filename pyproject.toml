@@ -1,0 +1,15 @@
+[project]
+name = "extract-llama-embed"
+version = "0.1.0"
+description = "Extract embeddings from Llama models"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "h5py>=3.13.0",
+    "matplotlib>=3.10.1",
+    "numpy>=2.2.3",
+    "pandas>=2.2.3",
+    "scipy>=1.15.2",
+    "torch>=2.6.0",
+    "transformers>=4.49.0",
+]
