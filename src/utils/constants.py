@@ -11,7 +11,7 @@ LLAMA_3P3_70B_MODEL_DIR = MODELS_DIR + "models--meta-llama--Llama-3.3-70B-Instru
 
 # File paths
 CHEMBL_DATA_FILE = CHEMBL_DATA_DIR + "chembl_clip_abstracts.h5"
-
+CHEMBL_EMBEDDINGS_FILE = CHEMBL_DATA_DIR + "chembl_clip_abstracts_embeddings.h5"
 
 # Model names
 LLAMA_3P3_70B_MODEL_NAME = "meta-llama/Llama-3.3-70B-Instruct"
