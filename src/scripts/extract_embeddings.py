@@ -4,7 +4,11 @@ from transformers import AutoModelForCausalLM, AutoModel, AutoTokenizer
 import h5py
 from tqdm import tqdm
 
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from src.utils.constants import CHEMBL_DATA_FILE, CHEMBL_EMBEDDINGS_FILE, MODELS_DIR, LLAMA_3P3_70B_MODEL_DIR, LLAMA_3P3_70B_MODEL_NAME
+
 
 def load_model(model_name, cache_dir):
     """
