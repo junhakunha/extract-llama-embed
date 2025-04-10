@@ -1,7 +1,7 @@
 
 
 # Directories
-HOME_DIR = "/home/scratch/junhalee/extract-llama-embed/"
+HOME_DIR = "/data2/scratch/junhalee/extract-llama-embed/"
 
 DATA_DIR = HOME_DIR + "data/"
 CHEMBL_DATA_DIR = DATA_DIR + "chembl_35/chembl_35_sqlite/"
