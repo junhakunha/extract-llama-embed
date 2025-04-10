@@ -2,13 +2,15 @@ import os
 import torch
 from transformers import AutoModelForCausalLM, AutoModel, AutoTokenizer
 import h5py
+import time
+import json
 from tqdm import tqdm
 
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.utils.constants import CHEMBL_DATA_FILE, CHEMBL_EMBEDDINGS_FILE, MODELS_DIR, LLAMA_3P3_70B_MODEL_DIR, LLAMA_3P3_70B_MODEL_NAME
-
+from src.utils.constants import CHEMBL_DATA_FILE, CHEMBL_EMBEDDINGS_DIR, MODELS_DIR, LLAMA_3P3_70B_MODEL_DIR, LLAMA_3P3_70B_MODEL_NAME
+from src.utils.tokens import HF_TOKEN
 
 def load_model(model_name, cache_dir):
     """
@@ -25,8 +27,9 @@ def load_model(model_name, cache_dir):
         "cache_dir": cache_dir,
         "device_map": "auto",          # Auto-split across available GPUs
         "low_cpu_mem_usage": True,     
-        "torch_dtype": torch.bfloat16, # Match H100 native format
-        "trust_remote_code": True      # Required for Llama models
+        "torch_dtype": torch.float8,   
+        "trust_remote_code": True,      # Required for Llama models
+        "token": HF_TOKEN
     }
 
     if os.path.exists(cache_dir):
@@ -120,7 +123,7 @@ def main():
     print("Getting embeddings...")
     batch_size = 32
     embeddings = []
-    for i in tqdm(range(0, len(abstracts), batch_size)):
+    for i in tqdm(range(0, len(abstracts)//20, batch_size)): # test 5% of data
         batch = abstracts[i:i + batch_size]
         batch_embeddings = get_embeddings(model, tokenizer, batch)
         embeddings.append(batch_embeddings)
@@ -128,7 +131,8 @@ def main():
 
     # Save the embeddings and canon_SMILES_lists as hdf5 file
     print("Saving embeddings and canon_SMILES_lists...")
-    with h5py.File(CHEMBL_EMBEDDINGS_FILE, 'w') as f:
+    embeddings_file_path = CHEMBL_EMBEDDINGS_DIR + f"{time.strftime('%Y%m%d_%H%M%S')}_LLAMA_3P3_70B_embeddings.h5"
+    with h5py.File(embeddings_file_path, 'w') as f:
         f.create_dataset('embeddings', data=embeddings)
         f.create_dataset('canon_SMILES_lists', data=canon_SMILES_lists)
 
