@@ -4,6 +4,7 @@ from transformers import AutoModelForCausalLM, AutoModel, AutoTokenizer
 import h5py
 import time
 import json
+import numpy as np
 from tqdm import tqdm
 
 import sys
@@ -123,7 +124,7 @@ def main():
     print("Getting embeddings...")
     batch_size = 32
     embeddings = []
-    for i in tqdm(range(0, len(abstracts)//10, batch_size)): # test 20% of data
+    for i in tqdm(range(0, len(abstracts)//20, batch_size)): # test 20% of data
         batch = abstracts[i:i + batch_size]
         batch_embeddings = get_embeddings(model, tokenizer, batch)
         embeddings.append(batch_embeddings)
@@ -136,10 +137,14 @@ def main():
     if os.path.exists(embeddings_file_path):
         print(f"File {embeddings_file_path} already exists. Exiting.")
         return
-    
+
+    # Convert lists of SMILES to JSON strings
+    canon_SMILES_json = [json.dumps(smiles_list) for smiles_list in canon_SMILES_lists]
+
     with h5py.File(embeddings_file_path, 'w') as f:
         f.create_dataset('embeddings', data=embeddings.cpu().numpy())
-        f.create_dataset('canon_SMILES_lists', data=canon_SMILES_lists)
+        dt = h5py.special_dtype(vlen=str)  # variable-length string dtype
+        f.create_dataset('canon_SMILES_lists', data=np.array(canon_SMILES_json, dtype=object), dtype=dt)
 
     print("Done!")
 
